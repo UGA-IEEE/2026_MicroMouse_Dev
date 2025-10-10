@@ -60,14 +60,14 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "STM32_Drivers::@768a070a0fe75716b479",
-					"jsonFile" : "target-STM32_Drivers-Debug-4496763f36988d61a144.json",
+					"jsonFile" : "target-STM32_Drivers-Debug-7d80a6eee392078ccc6e.json",
 					"name" : "STM32_Drivers",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "Sam_STM32_Project::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Sam_STM32_Project-Debug-eb80e229cab0172d26ea.json",
+					"jsonFile" : "target-Sam_STM32_Project-Debug-fda38af7303d2e2ee0c5.json",
 					"name" : "Sam_STM32_Project",
 					"projectIndex" : 0
 				}
