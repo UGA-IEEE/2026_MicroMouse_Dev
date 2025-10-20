@@ -37,7 +37,7 @@
 			{
 				"command" : 1,
 				"file" : 1,
-				"line" : 80,
+				"line" : 81,
 				"parent" : 2
 			},
 			{
@@ -49,7 +49,7 @@
 			{
 				"command" : 3,
 				"file" : 1,
-				"line" : 74,
+				"line" : 75,
 				"parent" : 2
 			}
 		]
@@ -275,7 +275,8 @@
 				16,
 				17,
 				18,
-				19
+				19,
+				20
 			]
 		}
 	],
@@ -399,6 +400,12 @@
 			"backtrace" : 3,
 			"isGenerated" : true,
 			"path" : "build/Debug/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c.obj",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 3,
+			"isGenerated" : true,
+			"path" : "build/Debug/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c.obj",
 			"sourceGroupIndex" : 2
 		}
 	],
