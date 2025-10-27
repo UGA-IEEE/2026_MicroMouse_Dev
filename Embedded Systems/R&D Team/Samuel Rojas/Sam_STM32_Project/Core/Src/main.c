@@ -19,7 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stdio.h"
-
+#include "string.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -43,6 +43,8 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
+UART_HandleTypeDef huart1;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -51,16 +53,25 @@ ADC_HandleTypeDef hadc1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+uint8_t RX1_Char = 0x00;
 /* USER CODE END PFP */
+
+//---------[ UART Data Reception Completion CallBackFunc. ]---------
+void HAL_USART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    HAL_UART_Receive_IT(&huart1, &RX1_Char, 1);
+}
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-float data;
+uint32_t data;
 uint32_t distance;
 float voltageReq;
 float voltage;
+
+
 /* USER CODE END 0 */
 
 /**
@@ -93,47 +104,55 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
+  MX_USART1_UART_Init();
+  //HAL_UART_Receive_IT(&huart1, &RX1_Char, 1);
+
   /* USER CODE BEGIN 2 */
   // & gives the address of the variable in memory
   HAL_ADC_Start(&hadc1);
+  //HAL_ADC_Start_IT(&hadc1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-
-    
-    voltageReq = 3.3;
+    voltageReq = 3.07; // 3.3 is the pin but for some reason the multimeter reads 3.09
     data = HAL_ADC_GetValue(&hadc1);
     voltage = (data / 4095) * voltageReq;
-
-    
-    if (voltage >= 3.05) {
+    //voltage *= 10;
+    //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET); // RED
+    //Values are 2.5, 1.6, 1.56
+    if (data >= 1683) {
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET); // RED
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET); // YELLOW
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // GREEN
-      continue;
-    } else if (voltage >= 2.78) {
+      //continue;
+    } else if (data >= 1098) {
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET); // RED
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET); // YELLOW
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // GREEN
-      continue;
-    } else if (voltage >= 1.82) {
+      //continue;
+    } else if (data >= 965) {
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET); // RED
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET); // YELLOW
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET); // GREEN
-      continue;
-    } else {
+      //continue;
+    } else{
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET); // RED
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET); // YELLOW
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // GREEN
+      //continue;
     }
     
-  
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+    //Transmit over UART via ASCII
+    char data_bus[12];//of size (adc_input)
+    sprintf(data_bus, "%u,\r\n", data);//convert data to chars
+    //strlen is the length of data_bus
+    HAL_UART_Transmit(&huart1, (uint8_t*)data_bus, strlen(data_bus), HAL_MAX_DELAY);
     HAL_Delay(100);
+    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
 
     /* USER CODE END WHILE */
 
@@ -232,6 +251,39 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 9600;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
 
 }
 
