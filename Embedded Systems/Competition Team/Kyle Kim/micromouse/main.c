@@ -8,6 +8,7 @@
 
 #define RCC_APB2ENR     (*(volatile unsigned int*)(RCC_BASE + 0x18))
 #define GPIOC_CRH       (*(volatile unsigned int*)(GPIOC_BASE + 0x04))
+#define GPIOA_CRL	(*(volatile unsigned int*)(0x40010800))
 #define GPIOC_ODR       (*(volatile unsigned int*)(GPIOC_BASE + 0x0C))
 
 #define RCC_IOPCEN      (1 << 4)   // I/O port C clock enable
