@@ -14,7 +14,7 @@
 
 
 //ADC Base
-#define ADC_BASE        (APB2PERIPH_BASE + 0x02400)
+#define ADC1_BASE        (APB2PERIPH_BASE + 0x02400)
 #define RCC_IOPAEN      (1 << 2)                                      // GPIOA clock enable
 #define RCC_ADC1EN      (1 << 9)                                      // ADC1 clock enable
 
@@ -44,21 +44,45 @@ void delay(volatile unsigned int d) {
     }
 }
 
-int main(void) {
-    // Enable GPIOC clock
-    RCC_APB2ENR |= RCC_IOPCEN;
+void blink_debug(volatile unsigned int time) {
+	// Enable GPIOC clock
+    	RCC_APB2ENR |= RCC_IOPCEN;
 
-    // Configure PC13 as output (MODE13 = 10, CNF13 = 00)
-    GPIOC_CRH &= ~(0xF << 20);     // Clear bits for pin 13
-    GPIOC_CRH |=  (0x2 << 20);     // MODE13 = 2 MHz output
+    	// Configure PC13 as output (MODE13 = 10, CNF13 = 00)
+	GPIOC_CRH &= ~(0xF << 20);     // Clear bits for pin 13
+	GPIOC_CRH |=  (0x2 << 20);     // MODE13 = 2 MHz output
+	
+	while (time--) {
+		// LED ON (remember: active-low)
+        	GPIOC_ODR &= ~(1 << 13);
+        	delay(800000); //800000 is normal
+
+        	// LED OFF
+        	GPIOC_ODR |= (1 << 13);
+        	delay(800000);
+	}
+}
+
+
+int main(void) {
+
 
     while (1) {
-        // LED ON (remember: active-low)
-        GPIOC_ODR &= ~(1 << 13);
-        delay(800000);
-
-        // LED OFF
-        GPIOC_ODR |= (1 << 13);
-        delay(800000);
+       	RCC_APB2ENR |= (1 << 9);
+	ADC1_CR2 |= (1 << 0);
+	ADC1_CR2 |= (1 << 3);
+	while (ADC1_CR2 & (1 << 3));
+	blink_debug(1);
+	delay(5000000);	
+	ADC1_CR2 |= (1 << 2);
+	while (ADC1_CR2 & (1 << 2));
+	blink_debug(2);
+	delay(5000000);
+	ADC1_CR2 |= (1 << 1);
+	ADC1_SQR3 = 0;
+	delay(5000000);
+	while (!(ADC1_SR & 1));
+	blink_debug(3);
+	unsigned int result = ADC1_DR & 0xFFFF;
     }
 }
