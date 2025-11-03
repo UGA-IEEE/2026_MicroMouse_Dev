@@ -65,11 +65,14 @@ void blink_debug(volatile unsigned int time) {
 
 
 int main(void) {
-
+ 
 
     while (1) {
        	RCC_APB2ENR |= (1 << 9);
+	RCC_APB2ENR |= (1 << 2);
+	GPIOA_CRL &= ~(0xF << 0);
 	ADC1_CR2 |= (1 << 0);
+	delay(10000);
 	ADC1_CR2 |= (1 << 3);
 	while (ADC1_CR2 & (1 << 3));
 	blink_debug(1);
