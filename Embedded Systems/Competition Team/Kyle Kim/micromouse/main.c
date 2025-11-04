@@ -1,7 +1,3 @@
-// ============================================================================
-// STM32F1 Bare-Metal ADC + LED Debug Example
-// ============================================================================
-
 // -----------------------------------------------------------------------------
 // Base Addresses
 // -----------------------------------------------------------------------------
@@ -48,18 +44,12 @@
 // ADC_SR bits
 #define ADC_SR_EOC        (1 << 1)   // End of conversion flag
 
-// -----------------------------------------------------------------------------
-// Simple Delay Function
-// -----------------------------------------------------------------------------
 void delay(volatile unsigned int d) {
     while (d--) {
         __asm__("nop");
     }
 }
 
-// -----------------------------------------------------------------------------
-// Debug LED Blink (on PC13, active-low)
-// -----------------------------------------------------------------------------
 void blink_debug(volatile unsigned int times) {
     // Enable GPIOC clock
     RCC_APB2ENR |= RCC_IOPCEN;
@@ -100,25 +90,26 @@ int main(void) {
         while (ADC1_CR2 & ADC_CR2_RSTCAL);
         blink_debug(1);
 
-        delay(5000000);
+        delay(1000000);
 
         // --- Start calibration ---
         ADC1_CR2 |= ADC_CR2_CAL;
         while (ADC1_CR2 & ADC_CR2_CAL);
         blink_debug(2);
 
-        delay(5000000);
+        delay(1000000);
 
         // --- Start conversion ---
-        ADC1_CR2 |= ADC_CR2_CONT;   // Continuous mode
-        ADC1_SQR3 = 0;              // Channel 0
-        delay(5000000);
+       	ADC1_SMPR2 |= (7 << 0);
+	ADC1_SQR3 = 0;              // Channel 0
+	delay(1000000);
 
         // Software start
+	ADC1_CR2 &= ~ADC_CR2_CONT;
         ADC1_CR2 |= ADC_CR2_SWSTART;
 
         // --- Wait for EOC flag ---
-        while (!(ADC1_SR & ADC_SR_EOC));
+        while (!(ADC1_SR & (1 << 1)));
         blink_debug(3);
 
         // --- Read result ---
