@@ -74,6 +74,7 @@ void blink_debug(volatile unsigned int times) {
 // -----------------------------------------------------------------------------
 int main(void) {
     while (1) {
+	delay(1000000);
         // --- Enable Clocks ---
         RCC_APB2ENR |= RCC_ADC1EN;  // ADC1 clock
         RCC_APB2ENR |= RCC_IOPAEN;  // GPIOA clock
