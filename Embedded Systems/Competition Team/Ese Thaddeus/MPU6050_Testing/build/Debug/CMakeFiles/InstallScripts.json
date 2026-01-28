@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/eseth/OneDrive/Desktop/MicroMouse/2026_MicroMouse_Dev/Embedded Systems/Competition Team/Ese Thaddeus/IMU_Testing/build/Debug/cmake_install.cmake",
+		"C:/Users/eseth/OneDrive/Desktop/MicroMouse/2026_MicroMouse_Dev/Embedded Systems/Competition Team/Ese Thaddeus/IMU_Testing/build/Debug/cmake/stm32cubemx/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,0 +1,22 @@
+# ninja log v5
+36	945	7838721738265517	CMakeFiles/IMU_Testing.dir/Core/Src/sysmem.c.obj	69ebbedbc6fd8665
+60	1196	7838721740031049	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c.obj	6f02f10bea39ff95
+74	1274	7838721740763056	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c.obj	124b35c1da50dd10
+113	2362	7839128449788111	CMakeFiles/IMU_Testing.dir/Core/Src/main.c.obj	3faa674b907f51c4
+45	1156	7838721739496113	CMakeFiles/IMU_Testing.dir/startup_stm32f103xb.s.obj	ebf425ce6a047e5c
+101	1262	7838721740171877	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c.obj	1cbfc2a80bd81fed
+41	1171	7838721739091519	CMakeFiles/IMU_Testing.dir/Core/Src/syscalls.c.obj	86a901d5802effb3
+53	1274	7838721740614527	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Core/Src/system_stm32f1xx.c.obj	1c3419d5648de7a4
+27	1275	7838721741126629	CMakeFiles/IMU_Testing.dir/Core/Src/stm32f1xx_hal_msp.c.obj	299df6fb40b6069d
+82	1284	7838721740864935	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c.obj	ab8812a0426f555c
+93	1373	7838721742177382	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c.obj	d249112fb643dd86
+23	1385	7838721742360955	CMakeFiles/IMU_Testing.dir/Core/Src/stm32f1xx_it.c.obj	e8d79eeb860b40a8
+951	1834	7838721747242532	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c.obj	9a5722e86d2bfe9c
+87	1426	7838721742865436	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c.obj	35f5fd2bc9b0ac46
+1266	1951	7838721748425454	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c.obj	e590d8f6ddb57437
+70	1672	7838721745657656	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c.obj	458d7b69234175a
+1171	1744	7838721746398278	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c.obj	ea1dc9f7870f911f
+1070	1825	7838721747070887	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c.obj	a4f707b1a9f0543c
+1157	1842	7838721747305140	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c.obj	cf8a8b12299a8c66
+1196	1839	7838721747305140	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c.obj	582d2ca21a663354
+2365	5957	7839128485219090	IMU_Testing.elf	a3ac4a48dc08a661
