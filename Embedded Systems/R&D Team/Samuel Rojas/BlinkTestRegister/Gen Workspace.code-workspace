@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"path": "../../../../../../Java projects"
+		},
+		{
+			"path": "../../../../.."
+		},
+		{
+			"name": "Blue Pill Code",
+			"path": "../Blue Pill Code"
+		},
+		{
+			"name": "STM32_Project",
+			"path": "../STM32_Project"
+		},
+		{
+			"name": "STM32_Project",
+			"path": "../../../../../STM32_Project"
+		},
+		{
+			"name": "Sam_STM32_Project",
+			"path": "../../../../../Sam_STM32_Project"
+		}
+	],
+	"settings": {
+		"java.debug.settings.onBuildFailureProceed": true
+	}
+}

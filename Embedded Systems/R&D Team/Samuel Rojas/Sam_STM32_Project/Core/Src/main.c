@@ -32,7 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define ADC_N 6
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -44,6 +44,18 @@
 ADC_HandleTypeDef hadc1;
 
 UART_HandleTypeDef huart1;
+
+enum {
+  FRONT_L = 0,
+  FRONT_R = 1,
+  S30_L = 2,
+  S30_R = 3,
+  S45_L = 4,
+  S45_R = 5
+};
+
+uint32_t adcraw[ADC_N];
+in32_t err_front, err_30, err_45;
 
 /* USER CODE BEGIN PV */
 
@@ -117,41 +129,27 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    voltageReq = 3.07; // 3.3 is the pin but for some reason the multimeter reads 3.09
-    data = HAL_ADC_GetValue(&hadc1);
-    voltage = (data / 4095) * voltageReq;
-    //voltage *= 10;
-    //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET); // RED
-    //Values are 2.5, 1.6, 1.56
-    if (data >= 1683) {
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET); // RED
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET); // YELLOW
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // GREEN
-      //continue;
-    } else if (data >= 1098) {
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET); // RED
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET); // YELLOW
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // GREEN
-      //continue;
-    } else if (data >= 965) {
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET); // RED
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET); // YELLOW
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET); // GREEN
-      //continue;
-    } else{
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET); // RED
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET); // YELLOW
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // GREEN
-      //continue;
-    }
-    
-    //Transmit over UART via ASCII
-    char data_bus[12];//of size (adc_input)
-    sprintf(data_bus, "%u,\r\n", data);//convert data to chars
-    //strlen is the length of data_bus
-    HAL_UART_Transmit(&huart1, (uint8_t*)data_bus, strlen(data_bus), HAL_MAX_DELAY);
-    HAL_Delay(100);
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
+    // Read all 6 conversions (in the rank order)
+    for (int i = 0; i < ADC_N; i++) {
+      HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+      adc_raw[i] = HAL_ADC_GetValue(&hadc1);
+    } 
+
+    // Errors: positive means "closer to RIGHT sensor's wall/target"
+    err_front = (int32_t)adc_raw[FRONT_R] - (int32_t)adc_raw[FRONT_L];
+    err_30 = (int32_t)adc_raw[S30_R] - (int32_t)adc_raw[S30_L];
+    err_45 = (int32_t)adc_raw[S45_R] - (int32_t)adc_raw[S45_L];
+        
+    char msg[128];
+    snprintf(msg, sizeof(msg),
+            "F_L=%lu,F_R=%lu,30_L=%lu,30_R=%lu,45_L=%lu,45_R=%lu | eF=%ld,e30=%ld,e45=%ld\r\n",
+            adc_raw[FRONT_L], adc_raw[FRONT_R],
+            adc_raw[S30_L],   adc_raw[S30_R],
+            adc_raw[S45_L],   adc_raw[S45_R],
+            err_front, err_30, err_45);
+
+    HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
 
     /* USER CODE END WHILE */
@@ -228,22 +226,52 @@ static void MX_ADC1_Init(void)
   /** Common config
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.NbrOfConversion = 6;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
   }
 
-  /** Configure Regular Channel
-  */
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  // Pick the right sampling time for IR sensors; 28.5 cycles is usually safer than 1.5
+  sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES_5;
+
+  // Rank 1: FRONT_L  (example: PA0)
   sConfig.Channel = ADC_CHANNEL_0;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.Rank    = ADC_REGULAR_RANK_1;
+  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+  // Rank 2: FRONT_R  (example: PA1)
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank    = ADC_REGULAR_RANK_2;
+  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+  // Rank 3: S30_L    (example: PA2)
+  sConfig.Channel = ADC_CHANNEL_2;
+  sConfig.Rank    = ADC_REGULAR_RANK_3;
+  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+  // Rank 4: S30_R    (example: PA3)
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank    = ADC_REGULAR_RANK_4;
+  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+  // Rank 5: S45_L    (example: PA4)
+  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Rank    = ADC_REGULAR_RANK_5;
+  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+  // Rank 6: S45_R    (example: PA5)
+  sConfig.Channel = ADC_CHANNEL_5;
+  sConfig.Rank    = ADC_REGULAR_RANK_6;
+  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
