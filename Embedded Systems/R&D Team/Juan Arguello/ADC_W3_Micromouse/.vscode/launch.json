@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cortex-Debug",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "stlink",
+            "device": "STM32F103C8",
+            "executable": "./build/Debug/ADC_W3_Micromouse.elf",
+            "runToEntryPoint": "main",
+            "svdFile": ""
+        }
+    ]
+}
