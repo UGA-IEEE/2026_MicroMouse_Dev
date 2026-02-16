@@ -18,8 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stdio.h"
-#include "string.h"
+#include <string.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -45,18 +44,6 @@ ADC_HandleTypeDef hadc1;
 
 UART_HandleTypeDef huart1;
 
-enum {
-  FRONT_L = 0,
-  FRONT_R = 1,
-  S30_L = 2,
-  S30_R = 3,
-  S45_L = 4,
-  S45_R = 5
-};
-
-uint32_t adcraw[ADC_N];
-in32_t err_front, err_30, err_45;
-
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -69,12 +56,6 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 uint8_t RX1_Char = 0x00;
 /* USER CODE END PFP */
-
-//---------[ UART Data Reception Completion CallBackFunc. ]---------
-void HAL_USART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-    HAL_UART_Receive_IT(&huart1, &RX1_Char, 1);
-}
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
@@ -102,7 +83,7 @@ int main(void)
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
-  /* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */ 
 
   /* USER CODE END Init */
 
@@ -117,8 +98,6 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_USART1_UART_Init();
-  //HAL_UART_Receive_IT(&huart1, &RX1_Char, 1);
-
   /* USER CODE BEGIN 2 */
   // & gives the address of the variable in memory
   HAL_ADC_Start(&hadc1);
@@ -129,7 +108,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+    
+    
     // Read all 6 conversions (in the rank order)
     for (int i = 0; i < ADC_N; i++) {
       HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
@@ -150,6 +130,7 @@ int main(void)
             err_front, err_30, err_45);
 
     HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+
 
 
     /* USER CODE END WHILE */
@@ -226,52 +207,22 @@ static void MX_ADC1_Init(void)
   /** Common config
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 6;
+  hadc1.Init.NbrOfConversion = 1;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
   }
 
-  ADC_ChannelConfTypeDef sConfig = {0};
-
-  // Pick the right sampling time for IR sensors; 28.5 cycles is usually safer than 1.5
-  sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES_5;
-
-  // Rank 1: FRONT_L  (example: PA0)
+  /** Configure Regular Channel
+  */
   sConfig.Channel = ADC_CHANNEL_0;
-  sConfig.Rank    = ADC_REGULAR_RANK_1;
-  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
-  // Rank 2: FRONT_R  (example: PA1)
-  sConfig.Channel = ADC_CHANNEL_1;
-  sConfig.Rank    = ADC_REGULAR_RANK_2;
-  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
-  // Rank 3: S30_L    (example: PA2)
-  sConfig.Channel = ADC_CHANNEL_2;
-  sConfig.Rank    = ADC_REGULAR_RANK_3;
-  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
-  // Rank 4: S30_R    (example: PA3)
-  sConfig.Channel = ADC_CHANNEL_3;
-  sConfig.Rank    = ADC_REGULAR_RANK_4;
-  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
-  // Rank 5: S45_L    (example: PA4)
-  sConfig.Channel = ADC_CHANNEL_4;
-  sConfig.Rank    = ADC_REGULAR_RANK_5;
-  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
-  // Rank 6: S45_R    (example: PA5)
-  sConfig.Channel = ADC_CHANNEL_5;
-  sConfig.Rank    = ADC_REGULAR_RANK_6;
-  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
